@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
 import { apiBaseUrl } from "next-auth/client/_utils";
 import { subscribe } from "diagnostics_channel";
+import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -52,6 +53,17 @@ export async function createCustomerIfNull() {
     const user = await prisma.user.findFirst({
       where: { email: session.user?.email },
     });
+
+    if (!user?.api_key) {
+      await prisma.user.update({
+        where: {
+          id: user?.id,
+        },
+        data: {
+          api_key: "secretkey_" + randomUUID(),
+        },
+      });
+    }
 
     if (!user?.stripe_customer_id) {
       const customer = await stripe.customers.create({
