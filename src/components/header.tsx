@@ -25,7 +25,7 @@ export function Header() {
           </Link>
           <Link
             href={"/dashboard"}
-            className="font-medium text-sm text-blue-50 bg-black px-4 py-2 rounded-lg hover:opacity-70"
+            className="font-medium text-sm text-blue-50 bg-black px-4 py-2 rounded-lg hover:opacity-90"
           >Dashboard</Link>
         </div>
       </div>

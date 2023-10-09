@@ -1,6 +1,10 @@
 import { Header } from "@/components/header";
 import { isLoggedIn } from "@/lib/auth";
-import { createCustomerIfNull, hasSubscription } from "@/lib/stripe";
+import {
+  createCheckOutLink,
+  createCustomerIfNull,
+  hasSubscription,
+} from "@/lib/stripe";
 import React from "react";
 
 export default async function DashboardLayout({
@@ -9,11 +13,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   await isLoggedIn();
-  await createCustomerIfNull();
-
-  const hasSub = await hasSubscription();
-  console.log(hasSub ? "has subscription" : "no subscription");
-
+    
   return (
     <div className="">
       <Header />

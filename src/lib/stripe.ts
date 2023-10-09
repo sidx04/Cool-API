@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
 import { apiBaseUrl } from "next-auth/client/_utils";
-
-// price_1NzCHTSJSpvvQFm16Mzo3cLx
+import { subscribe } from "diagnostics_channel";
 
 const prisma = new PrismaClient();
 
@@ -30,7 +29,21 @@ export async function hasSubscription() {
   return false;
 }
 
-export async function createCheckOutLink() {}
+export async function createCheckOutLink(customer: string) {
+  const checkout = await stripe.checkout.sessions.create({
+    success_url: "http://localhost:3000/dashboard/billing?success=true",
+    cancel_url: "http://localhost:3000/dashboard/billing?success=false",
+    customer: customer,
+    line_items: [
+      {
+        price: "price_1NzCHTSJSpvvQFm16Mzo3cLx",
+      },
+    ],
+    mode: "subscription",
+  });
+
+  return checkout.url;
+}
 
 export async function createCustomerIfNull() {
   const session = getServerSession(authOptions);
@@ -54,5 +67,10 @@ export async function createCustomerIfNull() {
         },
       });
     }
+    const userRedirect = await prisma.user.findFirst({
+      where: { email: session.user?.email },
+    });
+
+    return userRedirect?.stripe_customer_id;
   }
 }
