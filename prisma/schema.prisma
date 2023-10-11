@@ -50,6 +50,14 @@ model User {
   api_key            String?
 }
 
+model Log {
+  id      String   @id @default(cuid())
+  userId  String
+  method  String
+  status  Int
+  created DateTime @default(now())
+}
+
 model VerificationToken {
   identifier String
   token      String   @unique
